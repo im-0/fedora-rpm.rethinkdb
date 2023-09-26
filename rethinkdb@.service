@@ -1,0 +1,23 @@
+[Unit]
+Description=The open-source database for the realtime web (%i)
+
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=0
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=rethinkdb
+Group=rethinkdb
+
+Type=simple
+
+LogRateLimitIntervalSec=0
+
+ExecStart=/usr/bin/rethinkdb --config-file /etc/rethinkdb/%i.conf
+
+Restart=always
+RestartSec=10

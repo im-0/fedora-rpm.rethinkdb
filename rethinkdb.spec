@@ -1,0 +1,99 @@
+Name:       rethinkdb
+Version:    2.4.3
+Release:    1%{?dist}
+Summary:    The open-source database for the realtime web
+
+License:    Apache-2.0
+URL:        https://github.com/rethinkdb/rethinkdb
+Source0:    https://github.com/rethinkdb/rethinkdb/archive/v%{version}/%{name}-%{version}.tar.gz
+
+# Contains `rethinkdb-$VERSION/external/*` after running `make fetch`.
+Source1:    %{name}-%{version}.external.tar.xz
+
+Source2:    %{name}@.service
+
+Patch0:     0001-Include-stdint.h-in-errors.hpp-and-some-other-header.patch
+Patch1:     0002-Add-stdint.h-in-utils.hpp-too.patch
+
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  make
+BuildRequires:  python-unversioned-command
+BuildRequires:  systemd-rpm-macros
+BuildRequires:  protobuf-compiler
+BuildRequires:  protobuf-devel
+BuildRequires:  libcurl-devel
+BuildRequires:  boost-devel
+BuildRequires:  zlib-devel
+BuildRequires:  openssl-devel
+BuildRequires:  ncurses-devel
+
+
+%description
+RethinkDB is the first open-source scalable database built for realtime
+applications. It exposes a new database access model, in which the developer
+can tell the database to continuously push updated query results to applications
+without polling for changes. RethinkDB allows developers to build scalable
+realtime apps in a fraction of the time with less effort.
+
+
+%prep
+%setup -q -D -T -b0 -n %{name}-%{version}
+%setup -q -D -T -b1 -n %{name}-%{version}
+
+%patch0 -p1
+%patch1 -p1
+
+
+%build
+# Unset custom Fedora's CXXFLAGS and LDFLAGS, otherwise ld fails on libquickjs.
+unset CXXFLAGS
+unset LDFLAGS
+./configure --with-system-malloc
+make %{?_smp_mflags}
+
+
+%install
+mkdir -p %{buildroot}/%{_bindir}
+mkdir -p %{buildroot}/%{_unitdir}
+mkdir -p %{buildroot}/%{_sysconfdir}/%{name}
+mkdir -p %{buildroot}/%{_sharedstatedir}/%{name}
+
+mv build/release_system/rethinkdb %{buildroot}/%{_bindir}/
+cp \
+        packaging/assets/config/default.conf.sample \
+        %{buildroot}/%{_sysconfdir}/%{name}/
+mv %{SOURCE2} %{buildroot}/%{_unitdir}/
+
+
+%files
+%{_bindir}/rethinkdb
+%attr(0750,root,%{name}) %dir %{_sysconfdir}/%{name}
+%attr(0640,root,%{name}) %config %{_sysconfdir}/%{name}/default.conf.sample
+%attr(0750,%{name},%{name}) %dir %{_sharedstatedir}/%{name}
+%{_unitdir}/%{name}@.service
+
+
+%pre
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+        useradd -r -s /sbin/nologin -d %{_sharedstatedir}/%{name} -M \
+        -c 'RethinkDB' -g %{name} %{name}
+exit 0
+
+
+%post
+%systemd_post %{name}@.service
+
+
+%preun
+%systemd_preun '%{name}@*.service'
+
+
+%postun
+%systemd_postun_with_restart '%{name}@*.service'
+
+
+%changelog
+* Tue Sep 26 2023 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.3-1
+- Initial packaging
