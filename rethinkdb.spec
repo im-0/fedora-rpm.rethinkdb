@@ -1,6 +1,6 @@
 Name:       rethinkdb
 Version:    2.4.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    The open-source database for the realtime web
 
 License:    Apache-2.0
@@ -95,5 +95,8 @@ exit 0
 
 
 %changelog
+* Wed Sep 27 2023 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.3-2
+- Run as daemon, otherwise it does not create normal access control tables
+
 * Tue Sep 26 2023 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.3-1
 - Initial packaging
