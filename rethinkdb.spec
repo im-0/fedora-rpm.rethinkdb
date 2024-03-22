@@ -1,6 +1,6 @@
 Name:       rethinkdb
-Version:    2.4.3
-Release:    2%{?dist}
+Version:    2.4.4
+Release:    1%{?dist}
 Summary:    The open-source database for the realtime web
 
 License:    Apache-2.0
@@ -11,9 +11,6 @@ Source0:    https://github.com/rethinkdb/rethinkdb/archive/v%{version}/%{name}-%
 Source1:    %{name}-%{version}.external.tar.xz
 
 Source2:    %{name}@.service
-
-Patch0:     0001-Include-stdint.h-in-errors.hpp-and-some-other-header.patch
-Patch1:     0002-Add-stdint.h-in-utils.hpp-too.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -40,9 +37,6 @@ realtime apps in a fraction of the time with less effort.
 %prep
 %setup -q -D -T -b0 -n %{name}-%{version}
 %setup -q -D -T -b1 -n %{name}-%{version}
-
-%patch0 -p1
-%patch1 -p1
 
 
 %build
@@ -95,6 +89,9 @@ exit 0
 
 
 %changelog
+* Fri Mar 22 2024 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.4-1
+- Update to 2.4.4
+
 * Wed Sep 27 2023 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.3-2
 - Run as daemon, otherwise it does not create normal access control tables
 
