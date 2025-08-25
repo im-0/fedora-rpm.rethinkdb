@@ -1,6 +1,6 @@
 Name:       rethinkdb
 Version:    2.4.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    The open-source database for the realtime web
 
 License:    Apache-2.0
@@ -11,6 +11,8 @@ Source0:    https://github.com/rethinkdb/rethinkdb/archive/v%{version}/%{name}-%
 Source1:    %{name}-%{version}.external.tar.xz
 
 Source2:    %{name}@.service
+
+Patch0: 0001-security-fix-buffer-overflow-vulnerability-in-cJSON-.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -37,6 +39,8 @@ realtime apps in a fraction of the time with less effort.
 %prep
 %setup -q -D -T -b0 -n %{name}-%{version}
 %setup -q -D -T -b1 -n %{name}-%{version}
+
+%patch -P 0 -p 1
 
 
 %build
@@ -89,6 +93,9 @@ exit 0
 
 
 %changelog
+* Mon Aug 25 2025 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.4-2
+- Add security fix
+
 * Fri Mar 22 2024 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.4-1
 - Update to 2.4.4
 
