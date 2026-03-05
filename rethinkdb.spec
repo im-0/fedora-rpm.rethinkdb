@@ -1,6 +1,6 @@
 Name:       rethinkdb
 Version:    2.4.4
-Release:    2%{?dist}
+Release:    3%{?dist}
 Summary:    The open-source database for the realtime web
 
 License:    Apache-2.0
@@ -26,6 +26,9 @@ BuildRequires:  boost-devel
 BuildRequires:  zlib-devel
 BuildRequires:  openssl-devel
 BuildRequires:  ncurses-devel
+
+Provides: user(%{name})
+Provides: group(%{name})
 
 
 %description
@@ -93,6 +96,9 @@ exit 0
 
 
 %changelog
+* Thu Mar 5 2026 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.4-3
+- Fix packaging
+
 * Mon Aug 25 2025 Ivan Mironov <mironov.ivan@gmail.com> - 2.4.4-2
 - Add security fix
 
